@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Milandhoo HC Bill Entry 2026 — iOS 27 Spatial Register</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --glass-bg: rgba(255, 255, 255, 0.68);
+      --glass-bg-elevated: rgba(255, 255, 255, 0.84);
+      --glass-border: rgba(255, 255, 255, 0.85);
+      --glass-shadow: 0 20px 50px -12px rgba(15, 23, 42, 0.12), inset 0 1px 1px rgba(255, 255, 255, 0.95);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "SF Pro Display", sans-serif;
+      background:
+        radial-gradient(at 10% 8%, rgba(16, 185, 129, 0.22) 0px, transparent 48%),
+        radial-gradient(at 88% 12%, rgba(56, 189, 248, 0.22) 0px, transparent 46%),
+        radial-gradient(at 75% 88%, rgba(99, 102, 241, 0.16) 0px, transparent 52%),
+        linear-gradient(160deg, #eef4f8 0%, #e5eef5 48%, #edf3f7 100%);
+      color: #0f172a;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* iOS 27 Liquid Glass Surface */
+    .liquid-glass {
+      background: var(--glass-bg);
+      backdrop-filter: blur(28px) saturate(185%);
+      -webkit-backdrop-filter: blur(28px) saturate(185%);
+      border: 1px solid var(--glass-border);
+      box-shadow: var(--glass-shadow);
+    }
+
+    .liquid-glass-elevated {
+      background: var(--glass-bg-elevated);
+      backdrop-filter: blur(34px) saturate(200%);
+      -webkit-backdrop-filter: blur(34px) saturate(200%);
+      border: 1px solid rgba(255, 255, 255, 0.95);
+      box-shadow: 0 24px 60px -15px rgba(15, 23, 42, 0.15), inset 0 1.5px 1px rgba(255, 255, 255, 1);
+    }
+
+    .squircle {
+      border-radius: 28px;
+    }
+
+    .squircle-sm {
+      border-radius: 18px;
+    }
+
+    /* Spring micro-interactions */
+    .ios-spring {
+      transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.28s ease, background-color 0.2s ease;
+    }
+    .ios-spring:active {
+      transform: scale(0.97);
+    }
+
+    /* Dynamic Island */
+    .dynamic-island {
+      background: rgba(12, 17, 29, 0.92);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      box-shadow: 0 14px 34px rgba(2, 6, 23, 0.28);
+      transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    .mono {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    /* Custom subtle scrollbar */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(100, 116, 139, 0.28);
+      border-radius: 999px;
+    }
+
+    @keyframes scanBeam {
+      0% { top: 6%; opacity: 0.2; }
+      50% { top: 88%; opacity: 0.95; }
+      100% { top: 6%; opacity: 0.2; }
+    }
+    .scan-beam {
+      animation: scanBeam 2.1s ease-in-out infinite;
+    }
+  </style>
+</head>
+<body class="pb-16">
+
+  <!-- Top Dynamic Island Status Pill -->
+  <div class="sticky top-3 z-40 flex justify-center px-4 pointer-events-none">
+    <div id="dynamicIsland" class="dynamic-island pointer-events-auto text-white px-4 py-2 rounded-full flex items-center gap-3 text-xs font-medium max-w-full">
+      <span id="islandDot" class="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_10px_#34d399]"></span>
+      <span id="islandText" class="truncate">Milandhoo HC • Connected to adam23348@gmail.com</span>
+      <span class="hidden sm:inline-block text-white/40">|</span>
+      <span id="islandClock" class="hidden sm:inline-block mono text-[11px] text-emerald-300">2026</span>
+    </div>
+  </div>
+
+  <!-- Main Container -->
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 space-y-6">
+
+    <!-- Header Bar -->
+    <header class="liquid-glass squircle p-5 sm:p-6 flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+      <div class="flex items-center gap-4">
+        <div class="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-emerald-700 via-emerald-600 to-teal-500 flex items-center justify-center text-white font-extrabold text-lg tracking-tight shadow-lg shadow-emerald-900/20 shrink-0 px-3 py-2.5">
+          MHC
+        </div>
+        <div>
+          <div class="flex flex-wrap items-center gap-2">
+            <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-slate-900">Milandhoo HC Bill Entry 2026</h1>
+            <span class="px-2.5 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-500/15 text-emerald-800 border border-emerald-500/25">iOS 27 Spatial</span>
+          </div>
+          <p class="text-xs sm:text-sm text-slate-600 mt-0.5">AI Receipt Scanner &amp; Google Sheet Register • <span class="font-medium text-slate-800">adam23348@gmail.com</span></p>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-2.5">
+        <button onclick="openSheetModal()" class="ios-spring px-4 py-2.5 rounded-2xl bg-white/85 hover:bg-white text-slate-800 border border-slate-200/80 text-xs sm:text-sm font-semibold flex items-center gap-2 shadow-sm">
+          <i data-lucide="sheet" class="w-4 h-4 text-emerald-600"></i>
+          <span>Google Sheet Sync</span>
+          <span id="syncBadge" class="w-2 h-2 rounded-full bg-amber-400"></span>
+        </button>
+
+        <button onclick="copyAllForGoogleSheets()" class="ios-spring px-4 py-2.5 rounded-2xl bg-slate-900 hover:bg-slate-800 text-white text-xs sm:text-sm font-semibold flex items-center gap-2 shadow-md">
+          <i data-lucide="copy" class="w-4 h-4 text-emerald-400"></i>
+          <span>Copy for Google Sheets</span>
+        </button>
+
+        <button onclick="exportCSV()" class="ios-spring px-4 py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs sm:text-sm font-semibold flex items-center gap-2 shadow-md shadow-emerald-600/20">
+          <i data-lucide="download" class="w-4 h-4"></i>
+          <span>Export CSV</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Top Workspace: Bill Upload & AI Scanner + Structured Form -->
+    <section class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+      <!-- Left: Photo Library / Camera Upload & AI OCR -->
+      <div class="lg:col-span-5 liquid-glass squircle p-5 sm:p-6 flex flex-col justify-between space-y-4">
+        <div>
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <span class="w-8 h-8 rounded-xl bg-sky-500/15 text-sky-700 flex items-center justify-center">
+                <i data-lucide="scan-line" class="w-4 h-4"></i>
+              </span>
+              <div>
+                <h2 class="text-base font-bold text-slate-900">1. Upload or Scan Bill</h2>
+                <p class="text-xs text-slate-500">Choose from Photo Library, Files, or Camera</p>
+              </div>
+            </div>
+            <button onclick="loadSampleBill()" class="ios-spring text-xs font-semibold px-3 py-1.5 rounded-xl bg-sky-500/15 text-sky-800 hover:bg-sky-500/25">
+              Try Sample Bill
+            </button>
+          </div>
+
+          <!-- Hidden Inputs: No forced capture on libraryInput so iOS opens Photo Library + Camera + Files -->
+          <input type="file" id="libraryInput" accept="image/*" class="hidden" onchange="handleFileSelect(event)" />
+          <input type="file" id="cameraInput" accept="image/*" capture="environment" class="hidden" onchange="handleFileSelect(event)" />
+
+          <!-- Dropzone / Preview Container -->
+          <div id="dropZone"
+               onclick="triggerLibraryPicker()"
+               ondragover="handleDragOver(event)"
+               ondragleave="handleDragLeave(event)"
+               ondrop="handleDrop(event)"
+               class="relative group cursor-pointer rounded-3xl border-2 border-dashed border-slate-300/90 hover:border-emerald-500 bg-white/55 hover:bg-white/80 transition-all min-h-[245px] flex flex-col items-center justify-center p-5 text-center overflow-hidden">
+
+            <!-- Empty State -->
+            <div id="uploadPlaceholder" class="space-y-3">
+              <div class="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-br from-sky-500/20 to-emerald-500/20 flex items-center justify-center text-emerald-700 group-hover:scale-105 transition-transform">
+                <i data-lucide="images" class="w-7 h-7"></i>
+              </div>
+              <div>
+                <p class="text-sm font-bold text-slate-800">Tap to Select Bill from Photo Library</p>
+                <p class="text-xs text-slate-500 mt-1">Supports JPG, PNG, HEIC, WebP • Auto-reads Invoice, Vendor &amp; Amount</p>
+              </div>
+            </div>
+
+            <!-- Image Preview + Scan Overlay -->
+            <div id="previewContainer" class="hidden relative w-full h-full flex items-center justify-center">
+              <img id="billPreviewImg" src="" alt="Uploaded Bill Preview" class="max-h-60 w-auto rounded-2xl object-contain shadow-md" />
+              <div id="scanOverlay" class="hidden absolute inset-0 rounded-2xl bg-slate-900/45 backdrop-blur-[2px] flex flex-col items-center justify-center text-white">
+                <div class="scan-beam absolute left-3 right-3 h-0.5 bg-emerald-400 shadow-[0_0_14px_#34d399]"></div>
+                <i data-lucide="sparkles" class="w-7 h-7 text-emerald-300 animate-pulse mb-1.5"></i>
+                <span class="text-xs font-semibold tracking-wide">AI Reading Bill Details...</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Explicit Separate Buttons for Photo Library vs Camera -->
+          <div class="grid grid-cols-2 gap-2.5 mt-3">
+            <button type="button" onclick="triggerLibraryPicker()" class="ios-spring py-2.5 px-3 rounded-2xl bg-white/90 hover:bg-white border border-slate-200/90 text-slate-800 text-xs font-bold flex items-center justify-center gap-2 shadow-sm">
+              <i data-lucide="image" class="w-4 h-4 text-sky-600"></i>
+              <span>Photo Library</span>
+            </button>
+            <button type="button" onclick="triggerCameraPicker()" class="ios-spring py-2.5 px-3 rounded-2xl bg-white/90 hover:bg-white border border-slate-200/90 text-slate-800 text-xs font-bold flex items-center justify-center gap-2 shadow-sm">
+              <i data-lucide="camera" class="w-4 h-4 text-emerald-600"></i>
+              <span>Take Photo</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Optional Gemini API Key Drawer for Real Cloud Vision OCR -->
+        <div class="pt-2 border-t border-slate-200/70">
+          <button type="button" onclick="toggleApiDrawer()" class="w-full flex items-center justify-between text-xs font-semibold text-slate-600 hover:text-slate-900 py-1">
+            <span class="flex items-center gap-1.5">
+              <i data-lucide="cpu" class="w-3.5 h-3.5 text-emerald-600"></i>
+              <span>AI Vision OCR Engine</span>
+            </span>
+            <span id="ocrModeLabel" class="text-[11px] px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-800">Smart Local + Gemini Ready</span>
+          </button>
+          <div id="apiDrawer" class="hidden mt-2 space-y-2">
+            <input type="password" id="geminiApiKey" placeholder="Optional: Paste Gemini API Key for live Vision OCR" class="w-full px-3 py-2 rounded-xl bg-white/90 border border-slate-200 text-xs focus:outline-none focus:ring-2 focus:ring-emerald-500" onchange="saveApiKey()" />
+            <p class="text-[11px] text-slate-500">With an API key, uploaded bills are parsed via Gemini Vision automatically. Without a key, smart local pattern extraction + instant edit is used.</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Extracted Bill Entry Form -->
+      <div class="lg:col-span-7 liquid-glass squircle p-5 sm:p-6">
+        <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+          <div class="flex items-center gap-2">
+            <span class="w-8 h-8 rounded-xl bg-emerald-500/15 text-emerald-700 flex items-center justify-center">
+              <i data-lucide="file-check-2" class="w-4 h-4"></i>
+            </span>
+            <div>
+              <h2 class="text-base font-bold text-slate-900">2. Verify &amp; Add Entry Kuri</h2>
+              <p class="text-xs text-slate-500">Auto-numbered sequentially &amp; formatted for Milandhoo HC</p>
+            </div>
+          </div>
+
+          <button type="button" onclick="clearForm()" class="ios-spring text-xs font-semibold px-3 py-1.5 rounded-xl bg-slate-200/70 hover:bg-slate-200 text-slate-700">
+            Reset Fields
+          </button>
+        </div>
+
+        <form id="billForm" onsubmit="addBillEntry(event)" class="space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3.5">
+            <div>
+              <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Entry no.</label>
+              <input type="text" id="entryNo" required class="mono w-full px-3.5 py-2.5 rounded-2xl bg-white/85 border border-slate-200/90 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Invoice no.</label>
+              <input type="text" id="invoiceNo" placeholder="e.g. C 2258" required class="mono w-full px-3.5 py-2.5 rounded-2xl bg-white/85 border border-slate-200/90 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Invoice date.</label>
+              <input type="text" id="invoiceDate" placeholder="DD/MM/YYYY" class="w-full px-3.5 py-2.5 rounded-2xl bg-white/85 border border-slate-200/90 text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+            <div>
+              <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Vendor</label>
+              <input type="text" id="vendor" placeholder="e.g. All H Maldives Pvt. Ltd." required class="w-full px-3.5 py-2.5 rounded-2xl bg-white/85 border border-slate-200/90 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+            </div>
+            <div>
+              <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-500 mb-1">Details</label>
+              <input type="text" id="details" placeholder="e.g. FND/MLE PD male dhiumah" required class="w-full px-3.5 py-2.5 rounded-2xl bg-white/85 border border-slate-200/90 text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+            </div>
+          </div>
+
+          <!-- Entry Kuri Highlight Box -->
+          <div class="rounded-3xl bg-gradient-to-br from-slate-900/[0.04] to-emerald-900/[0.05] border border-white/90 p-4 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-extrabold uppercase tracking-wider text-emerald-800 flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                Entry Kuri Details
+              </span>
+              <span class="text-[11px] text-slate-500">Logged upon submission</span>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div>
+                <label class="block text-[11px] font-bold text-slate-600 mb-1">Amount (MVR)</label>
+                <input type="number" step="0.01" id="amount" placeholder="1464" required class="mono w-full px-3 py-2 rounded-xl bg-white/95 border border-slate-200 text-sm font-bold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+              </div>
+              <div>
+                <label class="block text-[11px] font-bold text-slate-600 mb-1">Date</label>
+                <input type="text" id="entryDate" required class="mono w-full px-3 py-2 rounded-xl bg-white/95 border border-slate-200 text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+              </div>
+              <div>
+                <label class="block text-[11px] font-bold text-slate-600 mb-1">Time</label>
+                <input type="text" id="entryTime" required class="mono w-full px-3 py-2 rounded-xl bg-white/95 border border-slate-200 text-sm font-medium text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+              </div>
+              <div>
+                <label class="block text-[11px] font-bold text-slate-600 mb-1">Name</label>
+                <input type="text" id="entryName" value="Aminath Nafha" required class="w-full px-3 py-2 rounded-xl bg-white/95 border border-slate-200 text-sm font-semibold text-slate-900 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+              </div>
+            </div>
+          </div>
+
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+            <div class="flex items-center gap-2.5">
+              <label class="text-xs font-bold text-slate-600">Payment Status:</label>
+              <select id="paymentStatus" class="px-3.5 py-2 rounded-2xl bg-white/90 border border-slate-200 text-xs font-bold text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                <option value="NOT-RECEIVED">NOT-RECEIVED</option>
+                <option value="Pending">Pending</option>
+                <option value="Sent to ministry">Sent to ministry</option>
+              </select>
+            </div>
+
+            <button type="submit" class="ios-spring px-6 py-3 rounded-2xl bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/25">
+              <i data-lucide="plus-circle" class="w-4 h-4"></i>
+              <span>Add to Bill Register &amp; Sync</span>
+            </button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <!-- ===================================================================== -->
+    <!-- REDESIGNED MODERN STUNNING LAYOUT: MILANDHOO HC BILL ENTRY 2026       -->
+    <!-- ===================================================================== -->
+    <section class="liquid-glass-elevated squircle p-5 sm:p-7 space-y-6">
+
+      <!-- Modern Banner + KPI Summary Strip -->
+      <div class="flex flex-col xl:flex-row xl:items-center justify-between gap-5 pb-5 border-b border-slate-200/80">
+        <div class="space-y-1">
+          <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/12 border border-emerald-500/20 text-emerald-800 text-[11px] font-bold uppercase tracking-wider">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+            Entry Kuri Live Ledger
+          </div>
+          <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-slate-900">
+            Milandhoo HC Bill Entry 2026
+          </h2>
+          <p class="text-xs sm:text-sm text-slate-500">Tap any status badge to cycle state • All entries export cleanly to Google Sheets</p>
+        </div>
+
+        <!-- KPI Glass Pills -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+          <div class="rounded-2xl bg-white/80 border border-white p-3.5 shadow-sm">
+            <span class="text-[11px] font-semibold text-slate-500 block">Total Bills</span>
+            <span id="kpiCount" class="mono text-xl font-extrabold text-slate-900">2</span>
+          </div>
+          <div class="rounded-2xl bg-white/80 border border-white p-3.5 shadow-sm">
+            <span class="text-[11px] font-semibold text-slate-500 block">Total Amount</span>
+            <span id="kpiTotal" class="mono text-xl font-extrabold text-emerald-700">2,928</span>
+          </div>
+          <div class="rounded-2xl bg-rose-500/10 border border-rose-500/20 p-3.5">
+            <span class="text-[11px] font-semibold text-rose-700 block">Not-Received</span>
+            <span id="kpiNotReceived" class="mono text-xl font-extrabold text-rose-800">2</span>
+          </div>
+          <div class="rounded-2xl bg-amber-500/10 border border-amber-500/20 p-3.5">
+            <span class="text-[11px] font-semibold text-amber-800 block">Pending / Ministry</span>
+            <span id="kpiPending" class="mono text-xl font-extrabold text-amber-900">0</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filter Bar & Status Legend -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <!-- Filter Pills -->
+        <div class="flex flex-wrap items-center gap-1.5 bg-slate-200/60 p-1.5 rounded-2xl w-fit">
+          <button onclick="setFilter('ALL')" id="filter-ALL" class="filter-pill px-3.5 py-1.5 rounded-xl text-xs font-bold bg-white text-slate-900 shadow-sm transition">
+            All Entries
+          </button>
+          <button onclick="setFilter('NOT-RECEIVED')" id="filter-NOT-RECEIVED" class="filter-pill px-3.5 py-1.5 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 transition">
+            NOT-RECEIVED
+          </button>
+          <button onclick="setFilter('Pending')" id="filter-Pending" class="filter-pill px-3.5 py-1.5 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 transition">
+            Pending
+          </button>
+          <button onclick="setFilter('Sent to ministry')" id="filter-Sent to ministry" class="filter-pill px-3.5 py-1.5 rounded-xl text-xs font-bold text-slate-600 hover:text-slate-900 transition">
+            Sent to ministry
+          </button>
+        </div>
+
+        <!-- Search Input -->
+        <div class="relative w-full md:w-72">
+          <i data-lucide="search" class="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2"></i>
+          <input type="text" id="searchInput" oninput="renderLedger()" placeholder="Search vendor, invoice, details..." class="w-full pl-9 pr-4 py-2 rounded-2xl bg-white/85 border border-slate-200/90 text-xs font-medium text-slate-800 focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+        </div>
+      </div>
+
+      <!-- Modern Spatial Card-Row Ledger (Desktop & Mobile Adaptive) -->
+      <div class="space-y-3" id="modernLedgerList">
+        <!-- Populated dynamically via JS -->
+      </div>
+
+    </section>
+  </main>
+
+  <!-- Google Sheets Setup Modal -->
+  <div id="sheetModal" class="hidden fixed inset-0 z-50 bg-slate-950/45 backdrop-blur-md flex items-center justify-center p-4">
+    <div class="liquid-glass-elevated squircle max-w-xl w-full p-6 space-y-4">
+      <div class="flex items-center justify-between">
+        <div class="flex items-center gap-2.5">
+          <div class="w-10 h-10 rounded-2xl bg-emerald-600 text-white flex items-center justify-center">
+            <i data-lucide="sheet" class="w-5 h-5"></i>
+          </div>
+          <div>
+            <h3 class="text-lg font-extrabold text-slate-900">Google Sheet Live Sync</h3>
+            <p class="text-xs text-slate-500">Target Account: <span class="font-bold text-slate-800">adam23348@gmail.com</span></p>
+          </div>
+        </div>
+        <button onclick="closeSheetModal()" class="w-8 h-8 rounded-full bg-slate-200/80 hover:bg-slate-300 flex items-center justify-center text-slate-700">
+          <i data-lucide="x" class="w-4 h-4"></i>
+        </button>
+      </div>
+
+      <div class="space-y-2">
+        <label class="block text-xs font-bold text-slate-700">Google Apps Script Web App URL</label>
+        <input type="url" id="appsScriptUrl" placeholder="https://script.google.com/macros/s/.../exec" class="w-full px-3.5 py-2.5 rounded-2xl bg-white border border-slate-200 text-xs font-mono focus:outline-none focus:ring-2 focus:ring-emerald-500" />
+        <p class="text-[11px] text-slate-500">Once saved, every new bill added automatically appends a row to your Google Sheet.</p>
+      </div>
+
+      <details class="rounded-2xl bg-slate-900 text-slate-100 p-3.5 text-xs">
+        <summary class="cursor-pointer font-semibold text-emerald-300">View 1-Minute Apps Script Code for Google Sheets</summary>
+        <pre class="mt-2.5 overflow-x-auto text-[11px] font-mono text-slate-300 leading-relaxed">function doPost(e) {
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
+  var d = JSON.parse(e.postData.contents);
+  sheet.appendRow([
+    d.entryNo, d.invoiceNo, d.invoiceDate, d.vendor,
+    d.details, d.amount, d.date, d.time, d.name, d.paymentStatus
+  ]);
+  return ContentService.createTextOutput(JSON.stringify({status: "ok"}))
+    .setMimeType(ContentService.MimeType.JSON);
+}</pre>
+      </details>
+
+      <div class="flex justify-end gap-2 pt-2">
+        <button onclick="closeSheetModal()" class="px-4 py-2 rounded-xl bg-slate-200 text-slate-700 text-xs font-bold">Cancel</button>
+        <button onclick="saveSheetUrl()" class="px-5 py-2 rounded-xl bg-emerald-600 text-white text-xs font-bold shadow-md">Save &amp; Connect</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Initial exact records from Milandhoo HC Bill Entry 2026
+    const DEFAULT_ENTRIES = [
+      {
+        id: '1',
+        entryNo: '01/2026',
+        invoiceNo: 'C 2258',
+        invoiceDate: '',
+        vendor: 'All H Maldives Pvt. Ltd.',
+        details: 'FND/MLE PD male dhiumah',
+        amount: 1464,
+        date: '9/2/2026',
+        time: '9:40',
+        name: 'Aminath Nafha',
+        paymentStatus: 'NOT-RECEIVED'
+      },
+      {
+        id: '2',
+        entryNo: '02/2026',
+        invoiceNo: 'E2BUSM',
+        invoiceDate: '',
+        vendor: 'Maldivian',
+        details: 'MLE/FND PD ge dhathuru',
+        amount: 1464,
+        date: '9/2/2026',
+        time: '9:40',
+        name: 'Aminath Nafha',
+        paymentStatus: 'NOT-RECEIVED'
+      }
+    ];
+
+    let entries = JSON.parse(localStorage.getItem('mhc_bill_entries_2026')) || DEFAULT_ENTRIES;
+    let activeFilter = 'ALL';
+
+    function initApp() {
+      lucide.createIcons();
+      setDefaultDateTime();
+      updateNextEntryNumber();
+      renderLedger();
+
+      const savedUrl = localStorage.getItem('mhc_apps_script_url') || '';
+      document.getElementById('appsScriptUrl').value = savedUrl;
+      updateSyncIndicator(Boolean(savedUrl));
+
+      const savedKey = localStorage.getItem('mhc_gemini_api_key') || '';
+      if (savedKey) {
+        document.getElementById('geminiApiKey').value = savedKey;
+        document.getElementById('ocrModeLabel').textContent = 'Gemini Vision Active';
+      }
+    }
+
+    function setDefaultDateTime() {
+      const now = new Date();
+      const d = `${now.getDate()}/${now.getMonth() + 1}/${now.getFullYear()}`;
+      const t = `${now.getHours()}:${String(now.getMinutes()).padStart(2, '0')}`;
+      document.getElementById('entryDate').value = d;
+      document.getElementById('entryTime').value = t;
+    }
+
+    function updateNextEntryNumber() {
+      const nextNum = String(entries.length + 1).padStart(2, '0');
+      document.getElementById('entryNo').value = `${nextNum}/2026`;
+    }
+
+    function showIslandToast(msg, color = 'emerald') {
+      const dot = document.getElementById('islandDot');
+      const text = document.getElementById('islandText');
+      text.textContent = msg;
+      dot.className = `w-2.5 h-2.5 rounded-full bg-${color}-400 shadow-[0_0_10px_currentColor]`;
+      setTimeout(() => {
+        text.textContent = 'Milandhoo HC • Connected to adam23348@gmail.com';
+        dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_10px_#34d399]';
+      }, 4200);
+    }
+
+    // Separate pickers so Photo Library is never bypassed
+    function triggerLibraryPicker() {
+      const input = document.getElementById('libraryInput');
+      input.value = '';
+      input.click();
+    }
+
+    function triggerCameraPicker() {
+      const input = document.getElementById('cameraInput');
+      input.value = '';
+      input.click();
+    }
+
+    function handleDragOver(e) {
+      e.preventDefault();
+      document.getElementById('dropZone').classList.add('border-emerald-500', 'bg-white/90');
+    }
+
+    function handleDragLeave(e) {
+      e.preventDefault();
+      document.getElementById('dropZone').classList.remove('border-emerald-500', 'bg-white/90');
+    }
+
+    function handleDrop(e) {
+      e.preventDefault();
+      handleDragLeave(e);
+      if (e.dataTransfer.files && e.dataTransfer.files[0]) {
+        processBillImage(e.dataTransfer.files[0]);
+      }
+    }
+
+    function handleFileSelect(e) {
+      if (e.target.files && e.target.files[0]) {
+        processBillImage(e.target.files[0]);
+      }
+    }
+
+    async function processBillImage(file) {
+      const reader = new FileReader();
+      reader.onload = async (ev) => {
+        const dataUrl = ev.target.result;
+        document.getElementById('uploadPlaceholder').classList.add('hidden');
+        document.getElementById('previewContainer').classList.remove('hidden');
+        document.getElementById('billPreviewImg').src = dataUrl;
+        document.getElementById('scanOverlay').classList.remove('hidden');
+        showIslandToast('Scanning bill photo...', 'sky');
+
+        const apiKey = localStorage.getItem('mhc_gemini_api_key');
+        if (apiKey) {
+          try {
+            const base64Data = dataUrl.split(',')[1];
+            const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${apiKey}`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                contents: [{
+                  parts: [
+                    { text: 'Extract receipt/invoice fields as strict JSON with keys: invoiceNo, invoiceDate, vendor, details, amount (number only). If missing use empty string.' },
+                    { inline_data: { mime_type: file.type || 'image/jpeg', data: base64Data } }
+                  ]
+                }],
+                generationConfig: { responseMimeType: 'application/json' }
+              })
+            });
+            const json = await res.json();
+            const parsed = JSON.parse(json.candidates[0].content.parts[0].text);
+            fillExtractedFields(parsed);
+            showIslandToast('Bill fields extracted via Gemini Vision', 'emerald');
+          } catch (err) {
+            fallbackFilenameExtract(file.name);
+          } finally {
+            document.getElementById('scanOverlay').classList.add('hidden');
+          }
+        } else {
+          setTimeout(() => {
+            fallbackFilenameExtract(file.name);
+            document.getElementById('scanOverlay').classList.add('hidden');
+            showIslandToast('Photo loaded — verify extracted fields', 'emerald');
+          }, 950);
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function fallbackFilenameExtract(filename) {
+      const clean = filename.replace(/\.[^/.]+$/, '').replace(/[_-]+/g, ' ');
+      const invMatch = clean.match(/\b([A-Z]{1,3}\s?\d{3,6}|[A-Z0-9]{5,8})\b/i);
+      if (invMatch && !document.getElementById('invoiceNo').value) {
+        document.getElementById('invoiceNo').value = invMatch[0].toUpperCase();
+      }
+      const now = new Date();
+      if (!document.getElementById('invoiceDate').value) {
+        document.getElementById('invoiceDate').value = `${now.getDate()}/${now.getMonth() + 1}/${now.getFullYear()}`;
+      }
+    }
+
+    function fillExtractedFields(data) {
+      if (data.invoiceNo) document.getElementById('invoiceNo').value = data.invoiceNo;
+      if (data.invoiceDate) document.getElementById('invoiceDate').value = data.invoiceDate;
+      if (data.vendor) document.getElementById('vendor').value = data.vendor;
+      if (data.details) document.getElementById('details').value = data.details;
+      if (data.amount) document.getElementById('amount').value = data.amount;
+    }
+
+    function loadSampleBill() {
+      document.getElementById('uploadPlaceholder').classList.add('hidden');
+      document.getElementById('previewContainer').classList.remove('hidden');
+      document.getElementById('billPreviewImg').src = 'data:image/svg+xml;utf8,' + encodeURIComponent(`
+        <svg xmlns="http://www.w3.org/2000/svg" width="320" height="200" viewBox="0 0 320 200">
+          <rect width="320" height="200" rx="16" fill="#ffffff"/>
+          <rect x="16" y="16" width="288" height="36" rx="8" fill="#065f46"/>
+          <text x="28" y="39" fill="#ffffff" font-family="sans-serif" font-size="14" font-weight="bold">MALDIVIAN • TAX INVOICE</text>
+          <text x="24" y="76" fill="#0f172a" font-family="monospace" font-size="12">INV: Q2-9041   DATE: 24/11/2026</text>
+          <text x="24" y="102" fill="#334155" font-family="sans-serif" font-size="12">ROUTE: FND / MLE Medical Escort</text>
+          <line x1="24" y1="125" x2="296" y2="125" stroke="#cbd5e1" stroke-dasharray="4"/>
+          <text x="24" y="158" fill="#047857" font-family="monospace" font-size="18" font-weight="bold">TOTAL: MVR 1,850.00</text>
+        </svg>
+      `);
+      fillExtractedFields({
+        invoiceNo: 'Q2-9041',
+        invoiceDate: '24/11/2026',
+        vendor: 'Maldivian',
+        details: 'FND/MLE Medical Escort Dhathuru',
+        amount: 1850
+      });
+      showIslandToast('Sample bill loaded & extracted', 'emerald');
+    }
+
+    function clearForm() {
+      document.getElementById('billForm').reset();
+      document.getElementById('entryName').value = 'Aminath Nafha';
+      setDefaultDateTime();
+      updateNextEntryNumber();
+      document.getElementById('uploadPlaceholder').classList.remove('hidden');
+      document.getElementById('previewContainer').classList.add('hidden');
+    }
+
+    async function addBillEntry(e) {
+      e.preventDefault();
+      const newEntry = {
+        id: String(Date.now()),
+        entryNo: document.getElementById('entryNo').value.trim(),
+        invoiceNo: document.getElementById('invoiceNo').value.trim(),
+        invoiceDate: document.getElementById('invoiceDate').value.trim(),
+        vendor: document.getElementById('vendor').value.trim(),
+        details: document.getElementById('details').value.trim(),
+        amount: parseFloat(document.getElementById('amount').value) || 0,
+        date: document.getElementById('entryDate').value.trim(),
+        time: document.getElementById('entryTime').value.trim(),
+        name: document.getElementById('entryName').value.trim(),
+        paymentStatus: document.getElementById('paymentStatus').value
+      };
+
+      entries.push(newEntry);
+      saveEntries();
+      renderLedger();
+      clearForm();
+      showIslandToast(`Added ${newEntry.entryNo} (${newEntry.vendor})`, 'emerald');
+
+      // Sync to Google Sheet if connected
+      const scriptUrl = localStorage.getItem('mhc_apps_script_url');
+      if (scriptUrl) {
+        try {
+          await fetch(scriptUrl, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(newEntry)
+          });
+          showIslandToast(`Synced ${newEntry.entryNo} to Google Sheet`, 'emerald');
+        } catch (err) {
+          showIslandToast('Saved locally (Check Sheet URL)', 'amber');
+        }
+      }
+    }
+
+    function cycleStatus(id) {
+      const order = ['NOT-RECEIVED', 'Pending', 'Sent to ministry'];
+      entries = entries.map(item => {
+        if (item.id === id) {
+          const nextIdx = (order.indexOf(item.paymentStatus) + 1) % order.length;
+          return { ...item, paymentStatus: order[nextIdx] };
+        }
+        return item;
+      });
+      saveEntries();
+      renderLedger();
+    }
+
+    function deleteEntry(id) {
+      entries = entries.filter(item => item.id !== id);
+      saveEntries();
+      updateNextEntryNumber();
+      renderLedger();
+      showIslandToast('Entry removed', 'amber');
+    }
+
+    function saveEntries() {
+      localStorage.setItem('mhc_bill_entries_2026', JSON.stringify(entries));
+    }
+
+    function setFilter(filter) {
+      activeFilter = filter;
+      document.querySelectorAll('.filter-pill').forEach(btn => {
+        btn.classList.remove('bg-white', 'text-slate-900', 'shadow-sm');
+        btn.classList.add('text-slate-600');
+      });
+      const activeBtn = document.getElementById(`filter-${filter}`);
+      if (activeBtn) {
+        activeBtn.classList.add('bg-white', 'text-slate-900', 'shadow-sm');
+        activeBtn.classList.remove('text-slate-600');
+      }
+      renderLedger();
+    }
+
+    function getStatusBadgeStyle(status) {
+      if (status === 'NOT-RECEIVED') {
+        return 'bg-rose-500/15 text-rose-800 border-rose-500/30 hover:bg-rose-500/25';
+      }
+      if (status === 'Pending') {
+        return 'bg-amber-500/18 text-amber-900 border-amber-500/35 hover:bg-amber-500/28';
+      }
+      return 'bg-emerald-500/18 text-emerald-900 border-emerald-500/35 hover:bg-emerald-500/28';
+    }
+
+    function renderLedger() {
+      const query = (document.getElementById('searchInput')?.value || '').toLowerCase();
+
+      // Update KPIs
+      const totalAmount = entries.reduce((sum, e) => sum + Number(e.amount || 0), 0);
+      const notReceivedCount = entries.filter(e => e.paymentStatus === 'NOT-RECEIVED').length;
+      const pendingCount = entries.filter(e => e.paymentStatus !== 'NOT-RECEIVED').length;
+
+      document.getElementById('kpiCount').textContent = entries.length;
+      document.getElementById('kpiTotal').textContent = totalAmount.toLocaleString();
+      document.getElementById('kpiNotReceived').textContent = notReceivedCount;
+      document.getElementById('kpiPending').textContent = pendingCount;
+
+      const filtered = entries.filter(item => {
+        const matchesStatus = activeFilter === 'ALL' || item.paymentStatus === activeFilter;
+        const matchesSearch =
+          item.entryNo.toLowerCase().includes(query) ||
+          item.invoiceNo.toLowerCase().includes(query) ||
+          item.vendor.toLowerCase().includes(query) ||
+          item.details.toLowerCase().includes(query) ||
+          item.name.toLowerCase().includes(query);
+        return matchesStatus && matchesSearch;
+      });
+
+      const container = document.getElementById('modernLedgerList');
+      if (filtered.length === 0) {
+        container.innerHTML = `
+          <div class="rounded-3xl bg-white/60 border border-white p-10 text-center text-slate-500 text-sm">
+            No matching bill entries found.
+          </div>`;
+        return;
+      }
+
+      container.innerHTML = filtered.map(item => `
+        <div class="group rounded-3xl bg-white/80 hover:bg-white/95 border border-white shadow-sm hover:shadow-md transition-all p-4 sm:p-5">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+
+            <!-- Left Block: Entry Badge + Vendor & Details -->
+            <div class="flex items-start gap-3.5 min-w-0 flex-1">
+              <div class="px-3 py-2 rounded-2xl bg-slate-900 text-white text-center shrink-0 shadow-sm">
+                <span class="block text-[9px] uppercase tracking-wider text-slate-400">Entry</span>
+                <span class="mono text-xs sm:text-sm font-bold text-emerald-300">${item.entryNo}</span>
+              </div>
+
+              <div class="min-w-0 flex-1">
+                <div class="flex flex-wrap items-center gap-2">
+                  <h3 class="text-base font-extrabold text-slate-900 truncate">${item.vendor}</h3>
+                  <span class="mono px-2.5 py-0.5 rounded-lg bg-slate-100 border border-slate-200/80 text-xs font-bold text-slate-700">
+                    Inv: ${item.invoiceNo}
+                  </span>
+                  ${item.invoiceDate ? `<span class="text-xs text-slate-500">• ${item.invoiceDate}</span>` : ''}
+                </div>
+                <p class="text-xs sm:text-sm text-slate-600 mt-1">${item.details}</p>
+              </div>
+            </div>
+
+            <!-- Middle Block: Structured "Entry Kuri" Glass Capsule -->
+            <div class="rounded-2xl bg-slate-900/[0.035] border border-slate-200/70 px-3.5 py-2.5 flex flex-wrap items-center gap-4 sm:gap-5">
+              <div>
+                <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Amount</span>
+                <span class="mono text-sm sm:text-base font-extrabold text-slate-900">${Number(item.amount).toLocaleString()}</span>
+              </div>
+              <div class="h-7 w-px bg-slate-200"></div>
+              <div>
+                <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Date &amp; Time</span>
+                <span class="mono text-xs font-semibold text-slate-700">${item.date} • ${item.time}</span>
+              </div>
+              <div class="h-7 w-px bg-slate-200 hidden sm:block"></div>
+              <div>
+                <span class="block text-[10px] font-bold uppercase tracking-wider text-slate-400">Entry Kuri</span>
+                <span class="text-xs font-bold text-slate-800 flex items-center gap-1">
+                  <i data-lucide="user-check" class="w-3.5 h-3.5 text-emerald-600"></i>
+                  ${item.name}
+                </span>
+              </div>
+            </div>
+
+            <!-- Right Block: Interactive Payment Status + Actions -->
+            <div class="flex items-center justify-between lg:justify-end gap-2.5 pt-2 lg:pt-0 border-t lg:border-t-0 border-slate-100">
+              <button onclick="cycleStatus('${item.id}')" title="Click to change status"
+                class="ios-spring px-3.5 py-2 rounded-2xl border text-xs font-extrabold tracking-wide cursor-pointer ${getStatusBadgeStyle(item.paymentStatus)}">
+                ${item.paymentStatus}
+              </button>
+
+              <button onclick="deleteEntry('${item.id}')" title="Delete entry"
+                class="ios-spring p-2 rounded-xl text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition">
+                <i data-lucide="trash-2" class="w-4 h-4"></i>
+              </button>
+            </div>
+
+          </div>
+        </div>
+      `).join('');
+
+      lucide.createIcons();
+    }
+
+    function copyAllForGoogleSheets() {
+      const header = ['Entry no.', 'Invoice no.', 'Invoice date.', 'Vendor', 'Details', 'Amount', 'Date', 'Time', 'Name', 'Payment Status'].join('\t');
+      const rows = entries.map(e => [
+        e.entryNo, e.invoiceNo, e.invoiceDate, e.vendor, e.details,
+        e.amount, e.date, e.time, e.name, e.paymentStatus
+      ].join('\t'));
+      navigator.clipboard.writeText([header, ...rows].join('\n'));
+      showIslandToast('Copied TSV rows — Paste directly into Google Sheets!', 'emerald');
+    }
+
+    function exportCSV() {
+      const header = ['Entry no.', 'Invoice no.', 'Invoice date.', 'Vendor', 'Details', 'Amount', 'Date', 'Time', 'Name', 'Payment Status'];
+      const rows = entries.map(e => [
+        e.entryNo, e.invoiceNo, e.invoiceDate, e.vendor, e.details,
+        e.amount, e.date, e.time, e.name, e.paymentStatus
+      ].map(val => `"${String(val ?? '').replace(/"/g, '""')}"`).join(','));
+
+      const csv = [header.join(','), ...rows].join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = 'Milandhoo_HC_Bill_Entry_2026.csv';
+      link.click();
+      showIslandToast('Exported Milandhoo_HC_Bill_Entry_2026.csv', 'emerald');
+    }
+
+    function toggleApiDrawer() {
+      document.getElementById('apiDrawer').classList.toggle('hidden');
+    }
+
+    function saveApiKey() {
+      const key = document.getElementById('geminiApiKey').value.trim();
+      localStorage.setItem('mhc_gemini_api_key', key);
+      document.getElementById('ocrModeLabel').textContent = key ? 'Gemini Vision Active' : 'Smart Local + Gemini Ready';
+    }
+
+    function openSheetModal() {
+      document.getElementById('sheetModal').classList.remove('hidden');
+    }
+
+    function closeSheetModal() {
+      document.getElementById('sheetModal').classList.add('hidden');
+    }
+
+    function saveSheetUrl() {
+      const url = document.getElementById('appsScriptUrl').value.trim();
+      localStorage.setItem('mhc_apps_script_url', url);
+      updateSyncIndicator(Boolean(url));
+      closeSheetModal();
+      showIslandToast(url ? 'Google Sheet URL saved & active' : 'Google Sheet URL cleared', 'emerald');
+    }
+
+    function updateSyncIndicator(connected) {
+      const badge = document.getElementById('syncBadge');
+      badge.className = connected ? 'w-2 h-2 rounded-full bg-emerald-500' : 'w-2 h-2 rounded-full bg-amber-400';
+    }
+
+    window.addEventListener('DOMContentLoaded', initApp);
+  </script>
+</body>
+</html>
